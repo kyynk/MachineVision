@@ -18,7 +18,7 @@ def gray_to_binary(image, threshold):
     binary_image = np.where(image > threshold, 0, 255)
     return binary_image.astype(np.uint8)
 
-def distance_transform_8(image):
+def distance_transform(image, connectivity=4):
     '''
     Distance transform with 8 neighbors
     '''
@@ -27,7 +27,10 @@ def distance_transform_8(image):
     distance_map = np.where(image == 255, 1, 0)
 
     # print(distance_map)
-    top_left_neighbors = [(-1, 0), (-1, -1), (-1, 1), (0, -1)]
+    if connectivity == 4:
+        top_left_neighbors = [(-1, 0), (0, -1)]
+    else:
+        top_left_neighbors = [(-1, 0), (-1, -1), (-1, 1), (0, -1)]
 
     for i in range(height):
         for j in range(width):
@@ -42,20 +45,22 @@ def distance_transform_8(image):
                 distance_map[i, j] = min(neighbors) + 1
     
     # print(distance_map)
-    bottom_right_neighbors = [(1, 0), (1, 1), (1, -1), (0, 1)]
+    if connectivity == 4:
+        bottom_right_neighbors = [(1, 0), (0, 1)]
+    else:
+        bottom_right_neighbors = [(1, 0), (1, 1), (1, -1), (0, 1)]
 
     for i in range(height - 1, -1, -1):
         for j in range(width - 1, -1, -1):
             if image[i, j] == 0:
                 continue
             neighbors = []
-            neighbors.append(distance_map[i, j])
             for n_y, n_x in bottom_right_neighbors:
                 if 0 <= (i + n_y) < height and 0 <= (j + n_x) < width:
                     neighbors.append(distance_map[i + n_y, j + n_x])
             # print(len(neighbors), neighbors)
             if neighbors:
-                distance_map[i, j] = min(neighbors) + 1
+                distance_map[i, j] = min(min(neighbors) + 1, distance_map[i, j])
 
     return distance_map
 
@@ -74,7 +79,7 @@ def image(number, threshold):
     image = cv2.imread(f'images/img{number}.jpg')
     gray_image = rgb_to_gray(image)
     binary_image = gray_to_binary(gray_image, threshold)
-    distance_image = distance_transform_8(binary_image)
+    distance_image = distance_transform(binary_image, connectivity=8)
     colors_distance_image = colorize_distance_transform(distance_image)
 
     cv2.imshow('Original Image', image)
