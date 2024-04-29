@@ -20,7 +20,7 @@ def gray_to_binary(image, threshold):
 
 def distance_transform(image, connectivity=4):
     '''
-    Distance transform with 8 neighbors
+    Distance transform with 4, 8 neighbors
     '''
     height, width = image.shape
     distance_map = np.zeros_like(image, dtype=np.uint16)
@@ -69,7 +69,7 @@ def colorize_distance_transform(distance_image):
     Colorize distance transform image
     '''
     max_value = np.max(distance_image)
-    colors_distance_image = (distance_image / max_value * 255).astype(np.uint8)  # 將數值映射到 [0, 255] 的範圍
+    colors_distance_image = (distance_image / max_value * 255).astype(np.uint8)
     return colors_distance_image
 
 def image(number, threshold):
