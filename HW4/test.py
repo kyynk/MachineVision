@@ -78,45 +78,108 @@
 import cv2
 import numpy as np
 
-# Function to draw circle
-def draw_circle(event, x, y, flags, param):
-    global drawing, color_idx
-    if event == cv2.EVENT_LBUTTONDOWN:
-        drawing = True
-        cv2.circle(img, (x, y), radius, colors[color_idx], -1)
-    elif event == cv2.EVENT_MOUSEMOVE:
-        if drawing:
+# # Function to draw circle
+# def draw_circle(event, x, y, flags, param):
+#     global drawing, color_idx
+#     if event == cv2.EVENT_LBUTTONDOWN:
+#         drawing = True
+#         cv2.circle(img, (x, y), radius, colors[color_idx], -1)
+#     elif event == cv2.EVENT_MOUSEMOVE:
+#         if drawing:
+#             cv2.circle(img, (x, y), radius, colors[color_idx], -1)
+#     elif event == cv2.EVENT_LBUTTONUP:
+#         drawing = False
+
+# # Load an image
+# img = cv2.imread('images/img1.jpg')
+
+# # Create a window and bind the function to window
+# cv2.namedWindow('image')
+# cv2.setMouseCallback('image', draw_circle)
+
+# drawing = False  # True if mouse is pressed
+# radius = 10  # Initial radius
+# colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255)]  # List of colors (blue, green, red)
+# color_names = ['Blue', 'Green', 'Red']  # List of color names
+# color_idx = 0  # Initial color index
+
+# while True:
+#     img_with_text = img.copy()
+#     # Display current color
+#     cv2.putText(img_with_text, f'Color: {color_names[color_idx]} ({colors[color_idx]})', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+#     cv2.imshow('image', img_with_text)
+#     k = cv2.waitKey(1) & 0xFF
+#     if k == ord('q'):  # Press 'q' to quit
+#         break
+#     elif k == ord('c'):  # Press 'c' to clear canvas
+#         img = cv2.imread('images/img1.jpg')
+#     elif k == ord('z'):  # Increase radius
+#         radius += 1
+#     elif k == ord('x'):  # Decrease radius (minimum is 1)
+#         radius = max(1, radius - 1)
+#     elif k == ord('n'):  # Change color (next)
+#         color_idx = (color_idx + 1) % len(colors)
+#     elif k == ord('s'):  # Save image
+#         cv2.imwrite('results/img1_q1-1.jpg', img)
+#         print("Image saved as 'drawn_image.jpg'.")
+
+# cv2.destroyAllWindows()
+
+import cv2
+import numpy as np
+
+def draw_on_image(image_path, number):
+    # Function to draw circle
+    def draw_circle(event, x, y, flags, param):
+        nonlocal img, drawing, radius, color_idx
+        if event == cv2.EVENT_LBUTTONDOWN:
+            drawing = True
             cv2.circle(img, (x, y), radius, colors[color_idx], -1)
-    elif event == cv2.EVENT_LBUTTONUP:
-        drawing = False
+        elif event == cv2.EVENT_MOUSEMOVE:
+            if drawing:
+                cv2.circle(img, (x, y), radius, colors[color_idx], -1)
+        elif event == cv2.EVENT_LBUTTONUP:
+            drawing = False
 
-# Load an image
-img = cv2.imread('images/img1.jpg')
+    # Load an image
+    img = cv2.imread(image_path)
 
-# Create a window and bind the function to window
-cv2.namedWindow('image')
-cv2.setMouseCallback('image', draw_circle)
+    # Create a window and bind the function to window
+    cv2.namedWindow('image')
+    cv2.setMouseCallback('image', draw_circle)
 
-drawing = False  # True if mouse is pressed
-radius = 10  # Initial radius
-colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255)]  # List of colors (blue, green, red)
-color_idx = 0  # Initial color index
+    drawing = False  # True if mouse is pressed
+    radius = 5  # Initial radius
+    colors = [(255, 0, 0), (0, 128, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255), (0, 255, 255),
+              (0, 0, 0), (128, 128, 128), (128, 0, 0), (128, 0, 128), (0, 128, 128), (192, 192, 192),
+              (255, 165, 0), (255, 192, 203)]
+    color_idx = 0  # Initial color index
 
-while True:
-    cv2.imshow('image', img)
-    k = cv2.waitKey(1) & 0xFF
-    if k == ord('q'):  # Press 'q' to quit
-        break
-    elif k == ord('c'):  # Press 'c' to clear canvas
-        img = cv2.imread('path_to_your_image.jpg')
-    elif k == ord('+'):  # Increase radius
-        radius += 1
-    elif k == ord('-'):  # Decrease radius (minimum is 1)
-        radius = max(1, radius - 1)
-    elif k == ord('n'):  # Change color (next)
-        color_idx = (color_idx + 1) % len(colors)
-    elif k == ord('s'):  # Save image
-        cv2.imwrite('results/img_q1-1.jpg', img)
-        print("Image saved as 'img_q1-1.jpg'.")
+    while True:
+        img_with_text = img.copy()
+        # Display current color
+        cv2.putText(img_with_text, f'Color: {colors[color_idx]}', 
+                    (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+        cv2.imshow('image', img_with_text)
+        k = cv2.waitKey(1) & 0xFF
+        if k == ord('q'):  # Press 'q' to quit
+            break
+        elif k == ord('c'):  # Press 'c' to clear canvas
+            img = cv2.imread(image_path)
+        elif k == ord('+'):  # Increase radius
+            radius += 1
+        elif k == ord('-'):  # Decrease radius (minimum is 1)
+            radius = max(1, radius - 1)
+        elif k == ord('n'):  # Change color (next)
+            color_idx = (color_idx + 1) % len(colors)
+        elif k == ord('s'):  # Save image
+            cv2.imwrite(f'results\img{number}_q1-1.jpg', img)
+            print("Image saved.")
 
-cv2.destroyAllWindows()
+    cv2.destroyAllWindows()
+
+number = 1
+# Example usage:
+draw_on_image(f'images/img{number}.jpg', number)
+number = 2
+draw_on_image(f'images/img{number}.jpg', number)

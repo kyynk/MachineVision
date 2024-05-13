@@ -4,37 +4,84 @@ Modules import
 import numpy as np
 import cv2
 
-def rgb_to_gray(image):
+def mark_on_image(image_path, number):
     '''
-    Convert color image to grayscale image
+    mark on image
     '''
-    gray_image = np.dot(image[..., :3], [0.3, 0.59, 0.11])
-    return gray_image.astype(np.uint8)
+    def draw_circle(event, x, y, flags, param):
+        '''
+        draw circle
+        '''
+        nonlocal img, drawing, radius, color_idx
+        if event == cv2.EVENT_LBUTTONDOWN:
+            drawing = True
+            cv2.circle(img, (x, y), radius, colors[number-1][color_idx], -1)
+        elif event == cv2.EVENT_MOUSEMOVE:
+            if drawing:
+                cv2.circle(img, (x, y), radius, colors[number-1][color_idx], -1)
+        elif event == cv2.EVENT_LBUTTONUP:
+            drawing = False
 
-def gray_to_binary(image, threshold):
-    '''
-    Convert image to binary image
-    '''
-    binary_image = np.where(image > threshold, 0, 255)
-    return binary_image.astype(np.uint8)
+    img = cv2.imread(image_path)
 
-def image(number, threshold):
+    # Create a window and bind the function to window
+    cv2.namedWindow('image')
+    cv2.setMouseCallback('image', draw_circle)
+
+    drawing = False  # True if mouse is pressed
+    radius = 5  # Initial radius
+    colors = [
+                [(255, 0, 0), (0, 128, 0), (0, 0, 255), (255, 255, 0)],
+                [(255, 0, 0), (0, 128, 0), (0, 0, 255), (255, 255, 0),
+                 (255, 0, 255), (0, 255, 255), (0, 0, 0), (128, 128, 128),
+                 (128, 0, 0), (128, 0, 128), (0, 128, 128), (192, 192, 192),
+                 (255, 165, 0), (255, 192, 203)],
+                [(255, 0, 0), (0, 128, 0), (0, 0, 255)]
+             ]
+    color_idx = 0  # Initial color index
+
+    while True:
+        img_with_text = img.copy()
+        # Display current color
+        cv2.putText(img_with_text, f'Color: {colors[number-1][color_idx]}', 
+                    (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
+        cv2.imshow('image', img_with_text)
+        k = cv2.waitKey(1) & 0xFF
+        if k == ord('q'):  # Press 'q' to quit
+            break
+        elif k == ord('c'):  # Press 'c' to clear canvas
+            img = cv2.imread(image_path)
+        elif k == ord('+'):  # Increase radius
+            radius += 1
+        elif k == ord('-'):  # Decrease radius (minimum is 1)
+            radius = max(1, radius - 1)
+        elif k == ord('n'):  # Change color (next)
+            color_idx = (color_idx + 1) % len(colors[number-1])
+        elif k == ord('s'):  # Save image
+            cv2.imwrite(f'results\img{number}_q1-1.jpg', img)
+            print("Image saved.")
+
+    cv2.destroyAllWindows()
+
+def watershed():
+    '''
+    watershed
+    '''
+
+def image(number):
     '''
     For img{number}.png
     '''
+    mark_on_image(f'images/img{number}.jpg', number)
     image = cv2.imread(f'images/img{number}.jpg')
-    gray_image = rgb_to_gray(image)
-    binary_image = gray_to_binary(gray_image, threshold)
 
     cv2.imshow('Original Image', image)
-    cv2.imshow('Grayscale Image', gray_image)
-    cv2.imshow('Binary Image', binary_image)
     # cv2.imwrite(f'results/img{number}_q1-1.jpg', colors_distance_image_4)
     # cv2.imwrite(f'results/img{number}_q1.jpg', colors_distance_image_8)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
 if __name__ == '__main__':
-    image(number=1, threshold=100)
-    image(number=2, threshold=100)
-    image(number=3, threshold=100)
+    image(number=1)
+    image(number=2)
+    image(number=3)
