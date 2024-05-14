@@ -4,6 +4,8 @@ Modules import
 import numpy as np
 import cv2
 
+from heapq import heappush, heappop
+
 def mark_on_image(image_path, number):
     '''
     mark on image
@@ -29,7 +31,7 @@ def mark_on_image(image_path, number):
     cv2.setMouseCallback('image', draw_circle)
 
     drawing = False  # True if mouse is pressed
-    radius = 5  # Initial radius
+    radius = 3  # Initial radius
     colors = [
                 [(255, 0, 0), (0, 128, 0), (0, 0, 255), (255, 255, 0)],
                 [(255, 0, 0), (0, 128, 0), (0, 0, 255), (255, 255, 0),
@@ -63,25 +65,47 @@ def mark_on_image(image_path, number):
 
     cv2.destroyAllWindows()
 
-def watershed():
+def watershed(origin_image, marked_image, number):
     '''
     watershed
     '''
+    colors = [
+        [[255, 0, 0], [0, 128, 0], [0, 0, 255], [255, 255, 0]],
+        [[255, 0, 0], [0, 128, 0], [0, 0, 255], [255, 255, 0], [255, 0, 255], [0, 255, 255], [0, 0, 0],
+         [128, 128, 128], [128, 0, 0], [128, 0, 128], [0, 128, 128], [192, 192, 192], [255, 165, 0], [255, 192, 203]],
+        [[255, 0, 0], [0, 128, 0], [0, 0, 255]]
+    ]
+    height = origin_image.shape[0]
+    width = origin_image.shape[1]
+    label_map = np.zeros((height, width, 3), dtype=np.float64)
+    seeds = []
+    # 1-1 mark area
+    for row in range(height):
+        for col in range(width):
+            if list(marked_image[row][col]) in colors[number-1]:
+                label_map[row][col] = colors[number-1].index(list(marked_image[row][col])) + 1
+                seeds.append((row, col))
+
+    # 1-2 region growing
+    # create priority queue needed for region growing
+    priority_queue = []
+
 
 def image(number):
     '''
     For img{number}.png
     '''
-    mark_on_image(f'images/img{number}.jpg', number)
-    image = cv2.imread(f'images/img{number}.jpg')
+    origin_image = cv2.imread(f'images/img{number}.jpg')
+    # mark_on_image(f'images/img{number}.jpg', number)
+    marked_image = cv2.imread(f'results/img{number}_q1-1.jpg')
+    watershed(origin_image, marked_image, number)
 
-    cv2.imshow('Original Image', image)
-    # cv2.imwrite(f'results/img{number}_q1-1.jpg', colors_distance_image_4)
+    # cv2.imshow('Marked Image', marked_image)
     # cv2.imwrite(f'results/img{number}_q1.jpg', colors_distance_image_8)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
 if __name__ == '__main__':
     image(number=1)
-    image(number=2)
-    image(number=3)
+    # image(number=2)
+    # image(number=3)

@@ -178,8 +178,18 @@ def draw_on_image(image_path, number):
 
     cv2.destroyAllWindows()
 
-number = 1
-# Example usage:
-draw_on_image(f'images/img{number}.jpg', number)
-number = 2
-draw_on_image(f'images/img{number}.jpg', number)
+# number = 1
+# # Example usage:
+# draw_on_image(f'images/img{number}.jpg', number)
+# number = 2
+# draw_on_image(f'images/img{number}.jpg', number)
+lll = [
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9],
+    [12, 10, 11]
+]
+print(np.array(lll).shape)
+a = np.array(lll)
+print(np.mean(a, axis=0))
+print(np.mean(a, axis=1))
