@@ -83,11 +83,11 @@ def calculate_priority(y, x, origin_image, seeds):
     neighbors_rgb = np.array(neighbors_rgb)
     mean_rgb = np.mean(neighbors_rgb, axis=0)
     variance_rgb = np.var(neighbors_rgb, axis=0)
-    # neighbors_distance = np.linalg.norm(neighbors_rgb - origin_image[y][x], axis=1)
-    # seeds_rgb = [list(origin_image[i][j]) for i, j in seeds]
-    # seeds_rgb = np.array(seeds_rgb)
-    # seeds_distance = np.linalg.norm(seeds_rgb - origin_image[y][x], axis=1)
-    priority = 0.5 * mean_rgb.sum() + 0.5 * variance_rgb.sum()# + 0.5 * np.min(neighbors_distance) + 0.75 * np.min(seeds_distance)
+    neighbors_distance = np.linalg.norm(neighbors_rgb - origin_image[y][x], axis=1)
+    seeds_rgb = [list(origin_image[i][j]) for i, j in seeds]
+    seeds_rgb = np.array(seeds_rgb)
+    seeds_distance = np.linalg.norm(seeds_rgb - origin_image[y][x], axis=1)
+    priority = 0.5 * mean_rgb.sum() + 0.5 * variance_rgb.sum()+ 0.5 * np.min(neighbors_distance) + 0.75 * np.min(seeds_distance)
     # print(priority)
     return priority
 
@@ -184,16 +184,17 @@ def image(number):
     For img{number}.png
     '''
     origin_image = cv2.imread(f'images/img{number}.jpg')
-    mark_on_image(f'images/img{number}.jpg', number)
+    # mark_on_image(f'images/img{number}.jpg', number)
     marked_image = cv2.imread(f'results/img{number}_q1-1.png')
     watershed_image = watershed(origin_image, marked_image, number)
-
-    # cv2.imshow('Origin Image', origin_image)
-    # cv2.imshow('Marked Image', marked_image)
-    # cv2.imshow('Watershed Image', watershed_image)
     cv2.imwrite(f'results/img{number}_q1.jpg', watershed_image)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+    segmented_image = cv2.imread(f'results/img{number}_q1.jpg')
+
+    cv2.imshow('Origin Image', origin_image)
+    cv2.imshow('Marked Image', marked_image)
+    cv2.imshow('Watershed Image', segmented_image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
 if __name__ == '__main__':
     image(number=1)
