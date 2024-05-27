@@ -28,9 +28,11 @@ def mean_filter(image, kernel_size):
     mean_filtered_image = np.zeros((height, width)).astype(np.float64)
     # for row in range(height):
     #     for col in range(width):
-    #         if image[row][col][0] != image[row][col][1] or image[row][col][2] != image[row][col][1] or image[row][col][2] != image[row][col][0]:
+    #         if image[row][col][0] != image[row][col][1] or \
+    #            image[row][col][2] != image[row][col][1] or \
+    #            image[row][col][2] != image[row][col][0]:
     #             print('diff')
-    
+
     # print(get_n_kernel(image, 0, 0, kernel_size))
 
     for row in range(height):
@@ -64,7 +66,7 @@ def gaussian_kernel(kernel_size, sigma):
     kernel = np.zeros((kernel_size, kernel_size)).astype(np.float64)
     for x in range(-kernel_size//2, kernel_size//2+1):
         for y in range(-kernel_size//2, kernel_size//2+1):
-            kernel[x][y] = 1 / (2 * np.pi * sigma**2) * np.exp(-(x**2 + y**2) / (2 * sigma**2))
+            kernel[x+kernel_size//2][y+kernel_size//2] = 1 / (2 * np.pi * sigma**2) * np.exp(-(x**2 + y**2) / (2 * sigma**2))
     return kernel
 
 def gaussian_filter(image, kernel_size, sigma):
@@ -119,5 +121,5 @@ def image(number, sigma):
 
 if __name__ == '__main__':
     image(number=1, sigma=1)
-    image(number=2, sigma=1)
-    image(number=3, sigma=1)
+    image(number=2, sigma=1.4)
+    image(number=3, sigma=1.2)
