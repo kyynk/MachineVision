@@ -78,6 +78,7 @@ def gaussian_filter(image, kernel_size, sigma):
     image = image.astype(np.float64)
     gaussian_filtered_image = np.zeros((height, width)).astype(np.float64)
     gaussian = gaussian_kernel(kernel_size, sigma)
+    gaussian = gaussian / np.sum(gaussian)
     for row in range(height):
         for col in range(width):
             kernel = get_n_kernel(image, row, col, kernel_size)
@@ -96,19 +97,18 @@ def custom_filter(image, kernel_size, sigma, filter_type):
     width = image.shape[1]
     image = image.astype(np.float64)
     custom_filtered_image = np.zeros((height, width)).astype(np.float64)
+    gaussian = gaussian_kernel(kernel_size, sigma)
+    gaussian = gaussian / np.sum(gaussian)
     for row in range(height):
         for col in range(width):
             kernel = get_n_kernel(image, row, col, kernel_size)
             if filter_type == 1:
                 custom_filtered_image[row][col] = (np.sum(kernel) / kernel_size**2 + np.median(kernel)) / 2
             elif filter_type == 2:
-                gaussian = gaussian_kernel(kernel_size, sigma)
                 custom_filtered_image[row][col] = (np.sum(kernel) / kernel_size**2 + np.sum(kernel * gaussian)) / 2
             elif filter_type == 3:
-                gaussian = gaussian_kernel(kernel_size, sigma)
                 custom_filtered_image[row][col] = (np.median(kernel) + np.sum(kernel * gaussian)) / 2
             elif filter_type == 4:
-                gaussian = gaussian_kernel(kernel_size, sigma)
                 custom_filtered_image[row][col] = (np.sum(kernel) / kernel_size**2 + np.median(kernel) + np.sum(kernel * gaussian)) / 3
 
     return custom_filtered_image
@@ -141,7 +141,7 @@ def image(number, sigma):
 
     for i in range(1, 5):
         custom_filtered_image = custom_filter(origin_image, 5, sigma, i)
-        cv2.imwrite(f'results/img{number}_extra_{i}.jpg', custom_filtered_image)
+        cv2.imwrite(f'results/img{number}_q4_{i}.jpg', custom_filtered_image)
 
     cv2.imshow('Origin Image', origin_image)
     cv2.imshow('Mean Filtered Image (3x3)', mean_3)
