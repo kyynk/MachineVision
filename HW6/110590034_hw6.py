@@ -20,8 +20,11 @@ def get_n_kernel(image, row, col, kernel_size):
     kernel = np.zeros((kernel_size, kernel_size)).astype(np.float64)
     for i in range(-kernel_size//2, kernel_size//2+1):
         for j in range(-kernel_size//2, kernel_size//2+1):
-            if 0 <= row+i < height and 0 <= col+j < width:
-                kernel[i+kernel_size//2][j+kernel_size//2] = image[row+i][col+j]
+            # if 0 <= row+i < height and 0 <= col+j < width:
+            #     kernel[i+kernel_size//2][j+kernel_size//2] = image[row+i][col+j]
+            new_row = min(max(row + i, 0), height - 1)
+            new_col = min(max(col + j, 0), width - 1)
+            kernel[i + kernel_size//2][j + kernel_size//2] = image[new_row][new_col]
     return kernel
 
 def gaussian_kernel(kernel_size, sigma):
@@ -156,16 +159,15 @@ def image(number, gaussian_kernel_size, sigma, double_threshold_low, double_thre
     else:
         origin_image = cv2.imread(f'images/img{number}.jpg')
 
-    print(origin_image.shape)
     gray_image = rgb_to_gray(origin_image)
-    print(gray_image.shape)
     cv2.imwrite(f'results/img{number}_1.jpg', gray_image)
 
     gaussian_filtered_image = gaussian_filter(gray_image, gaussian_kernel_size, sigma)
-    print(gaussian_filtered_image.shape)
     cv2.imwrite(f'results/img{number}_2.jpg', gaussian_filtered_image)
 
     magnitude, slope = sobel_filter(gaussian_filtered_image)
+    cv2.imwrite(f'results/img{number}_2_mag.jpg', magnitude)
+    print(magnitude.max(), magnitude.min())
 
     suppressed_image = non_maximum_suppression(magnitude, slope)
     cv2.imwrite(f'results/img{number}_3.jpg', suppressed_image)
@@ -174,9 +176,9 @@ def image(number, gaussian_kernel_size, sigma, double_threshold_low, double_thre
     cv2.imwrite(f'results/img{number}_4.jpg', double_threshold_image)
 
     edge_image = edge_tracking(double_threshold_image, weak, strong)
-    cv2.imwrite(f'results/img{number}.jpg', edge_image)
+    cv2.imwrite(f'results/img{number}_sobel.jpg', edge_image)
 
 if __name__ == '__main__':
-    image(number=1, gaussian_kernel_size=5, sigma=1.6, double_threshold_low=0.05, double_threshold_high=0.5)
-    image(number=2, gaussian_kernel_size=5, sigma=1.6, double_threshold_low=0.15, double_threshold_high=0.3)
-    image(number=3, gaussian_kernel_size=3, sigma=1.2, double_threshold_low=0.18, double_threshold_high=0.2)
+    image(number=1, gaussian_kernel_size=5, sigma=1.7, double_threshold_low=0.05, double_threshold_high=0.5)
+    image(number=2, gaussian_kernel_size=5, sigma=1.7, double_threshold_low=0.15, double_threshold_high=0.3)
+    image(number=3, gaussian_kernel_size=3, sigma=1.3, double_threshold_low=0.18, double_threshold_high=0.2)
