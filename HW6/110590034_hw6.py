@@ -55,7 +55,7 @@ def gaussian_filter(image, kernel_size, sigma):
 
 def sobel_filter(image):
     '''
-    Sobel filter
+    Sobel filter, get gradient magnitude and slope
     '''
     height = image.shape[0]
     width = image.shape[1]
@@ -179,6 +179,6 @@ def image(number, gaussian_kernel_size, sigma, double_threshold_low, double_thre
     cv2.imwrite(f'results/img{number}_sobel.jpg', edge_image)
 
 if __name__ == '__main__':
-    image(number=1, gaussian_kernel_size=5, sigma=1.7, double_threshold_low=0.05, double_threshold_high=0.5)
-    image(number=2, gaussian_kernel_size=5, sigma=1.7, double_threshold_low=0.15, double_threshold_high=0.3)
-    image(number=3, gaussian_kernel_size=3, sigma=1.3, double_threshold_low=0.18, double_threshold_high=0.2)
+    image(number=1, gaussian_kernel_size=5, sigma=1.7, double_threshold_low=0.7, double_threshold_high=0.45)
+    image(number=2, gaussian_kernel_size=7, sigma=1.7, double_threshold_low=0.7, double_threshold_high=0.25)
+    image(number=3, gaussian_kernel_size=3, sigma=1.3, double_threshold_low=0.2, double_threshold_high=0.19)
